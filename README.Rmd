@@ -1,11 +1,17 @@
-Map of lived places
-================
+---
+title: "Map of lived places"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, cache=F, fig.path="figures/")
+```
 
 ## Data
 
 First we specify the exact adresses and the cities
 
-``` r
+```{r}
 #' Adresses
 adresses <- list(c("Schlüsselbergstraße 8", "81673", "München", "Germany"), 
                  c("Schlossangerweg 10", "85635", "Höhenkirchen-Siegertsbrunn", "Germany"),
@@ -35,7 +41,7 @@ cities <- world.cities[world.cities$name %in% c(as.character(cities)),]
 
 ## Map of lived cities
 
-``` r
+```{r, fig.width=10, fig.height=5}
 #' Get coordinate of addresses
 # library(ggmap)
 # locations <- lapply(adresses, FUN=function(x) geocode(location = toString(x), 
@@ -57,32 +63,21 @@ library(ggplot2)
 ggplot() + geom_polygon(data=countriesHigh, aes(x=long, y=lat, group=group), colour="black", fill="gray50") + 
   geom_point(data=locations_df, aes(x=lon, y=lat), colour="red") + lims(x=c(-180,180), y=c(-90,90)) + 
   coord_sf()
-```
-
-    ## Loading required package: sp
-
-    ## Regions defined for each Polygons
-
-![](figures/unnamed-chunk-2-1.png)<!-- -->
-
-``` r
 #' Cuts off Antarctica and destroys image
 ```
 
 Non-ggplot map of lived cities
 
-``` r
+```{r, fig.width=8, fig.height=5}
 #' Non-ggplot Alternative
 library(sp)
 plot(countriesHigh)
 points(x=locations_df$lon, y=locations_df$lat, type="p", col="red", pch=16)
 ```
 
-![](figures/unnamed-chunk-3-1.png)<!-- -->
-
 ## Open Street Map
 
-``` r
+```{r, eval=F}
 #' Get Open Street Map Data
 library(OpenStreetMap)
 tile <- osmtile(x = locations_df$lon[1], y = locations_df$lat[1], zoom=8, type="osm")
@@ -98,7 +93,7 @@ plot(OSMdata)
 
 ## Landsat
 
-``` r
+```{r, eval=F}
 locations_sp <- locations_df
 coordinates(locations_sp) <- c("lon","lat")
 library(raster)
@@ -114,7 +109,7 @@ plot(pr_sa_sp, add=TRUE)
 
 ## Sentinel
 
-``` r
+```{r, eval=F}
 #' Get Landsat/Sentinel-2 Images from Earthexplorer (http://earthexplorer.usgs.gov/, user: mb_eco)
 
 #' Read Sentinel-2 JPEG2000 Images using GDAL
@@ -134,20 +129,20 @@ s2a_b1 <- readGDAL(bands[[1]][1])
 s2a_b2 <- readGDAL(bands[[1]][2])
 
 #' Band information
-#' Band name    Resolution (m)  Central wavelength (nm) Band width (nm) Purpose
-#' B01  60  443     20  Aerosol detection
-#' B02  10  490     65  Blue
-#' B03  10  560     35  Green
-#' B04  10  665     30  Red
-#' B05  20  705     15  Vegetation classification
-#' B06  20  740     15  Vegetation classification
-#' B07  20  783     20  Vegetation classification
-#' B08  10  842     115     Near infrared
-#' B08A     20  865     20  Vegetation classification
-#' B09  60  945     20  Water vapour
-#' B10  60  1375    30  Cirrus
-#' B11  20  1610    90  Snow / ice / cloud discrimination
-#' B12  20  2190    180     Snow / ice / cloud discrimination
+#' Band name	Resolution (m)	Central wavelength (nm)	Band width (nm)	Purpose
+#' B01 	60 	443 	20 	Aerosol detection
+#' B02 	10 	490 	65 	Blue
+#' B03 	10 	560 	35 	Green
+#' B04 	10 	665 	30 	Red
+#' B05 	20 	705 	15 	Vegetation classification
+#' B06 	20 	740 	15 	Vegetation classification
+#' B07 	20 	783 	20 	Vegetation classification
+#' B08 	10 	842 	115 	Near infrared
+#' B08A 	20 	865 	20 	Vegetation classification
+#' B09 	60 	945 	20 	Water vapour
+#' B10 	60 	1375 	30 	Cirrus
+#' B11 	20 	1610 	90 	Snow / ice / cloud discrimination
+#' B12 	20 	2190 	180 	Snow / ice / cloud discrimination
 
 # Read RGB stack
 library(raster)
