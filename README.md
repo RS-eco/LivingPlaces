@@ -17,9 +17,11 @@ adresses <- list(c("Schlüsselbergstraße 8", "81673", "München", "Germany"),
                  c("Kuredu Island Resort", "Kuredu", "Lhaviyani Atoll", "Maldives"),
                  c("Königsallee 36", "95448", "Bayreuth", "Germany"),
                  c("Lise-Meitner-Platz 1", "95448", "Bayreuth", "Germany"),
-                 c("Meyernreuth 5", "95448", "Bayreuth", "Germany"),
+                 c("Meyernreuth 5", "95448", "Bayreuth", "Germ´any"),
                  c("Triftstrasse 4", "06114", "Halle (S.)", "Germany"),
-                 c("Windthorststr. 15", "06114", "Halle (S.)", "Germany"))
+                 c("Dreieichstrasse 12", "60594", "Frankfurt am Main", "Germany"),
+                 c("Windthorststr. 15", "06114", "Halle (S.)", "Germany"),
+                 c("Kulmbacherstr. 62", "95445", "Bayreuth", "Germany"))
 
 # April 1987 - in München - Schlüsselbergstr. 8, 81673
 # Juni 1990 - in Höhenkirchen, Schlossangerweg 10, 85635
@@ -29,7 +31,7 @@ adresses <- list(c("Schlüsselbergstraße 8", "81673", "München", "Germany"),
 data(world.cities, package="maps")
 
 #' Subset by living places
-cities <- c("Munich", "Bangor", "Den Helder", "Bayreuth", "Halle")
+cities <- c("Munich", "Bangor", "Den Helder", "Bayreuth", "Halle", "Frankfurt am Main", "Halle", "Bayreuth")
 cities <- world.cities[world.cities$name %in% c(as.character(cities)),]
 ```
 
@@ -37,36 +39,44 @@ cities <- world.cities[world.cities$name %in% c(as.character(cities)),]
 
 ``` r
 #' Get coordinate of addresses
-# library(ggmap)
-# locations <- lapply(adresses, FUN=function(x) geocode(location = toString(x), 
+#library(ggmap)
+#locations <- lapply(adresses, FUN=function(x) ggmap::geocode(location = toString(x), 
 #                                                      output = c("latlon"), 
-#                                                      source = c("dsk")))
+#                                                      source = c("google")))
+
 # locations_df <- do.call("rbind", locations)
 locations_df <- data.frame(lon = c(11.631700, 11.733300, 11.850000, -4.113668, -4.113668,
-                                   4.784720, -4.169260, 73.483330, 11.599300, 11.599300,
-                                   11.599300, 10.500000), 
+                                   4.784720, -4.169260, 73.483330, 11.59369, 11.59568,
+                                   11.61163, 11.96128, 8.69203, 11.96935, 11.56238), 
                            lat = c(48.12650, 48.01670, 47.90000, 53.22200, 53.22200, 
-                                   53.00500, 53.22775,  5.38333, 49.94740, 49.94740,
-                                   49.94740, 51.50000))
-                           
+                                   53.00500, 53.22775,  5.38333, 49.93965, 49.92444,
+                                   49.92324, 51.49838, 50.10609, 51.49616, 49.94888),
+                           z=c(1:15))
+
 # Load countries data
 data(countriesHigh, package="rworldxtra")
 
 #' Plot world map with locations
 library(ggplot2)
 ggplot() + geom_polygon(data=countriesHigh, aes(x=long, y=lat, group=group), colour="black", fill="gray50") + 
-  geom_point(data=locations_df, aes(x=lon, y=lat), colour="red") + lims(x=c(-180,180), y=c(-90,90)) + 
-  coord_sf()
+  geom_point(data=locations_df, aes(x=lon, y=lat), colour="red") + 
+  coord_sf(xlim=c(-180,180), ylim=c(-90,90))
 ```
-
-    ## Loading required package: sp
-
-    ## Regions defined for each Polygons
 
 ![](figures/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
-#' Cuts off Antarctica and destroys image
+ggplot() + geom_polygon(data=countriesHigh, aes(x=long, y=lat, group=group), colour="black", fill="gray50") + 
+  geom_point(data=locations_df, aes(x=lon, y=lat), colour="red") + 
+  coord_sf(xlim=c(-10,80), ylim=c(0,60))
+```
+
+![](figures/unnamed-chunk-2-2.png)<!-- -->
+
+``` r
+#ggplot() + geom_polygon(data=countriesHigh, aes(x=long, y=lat, group=group), colour="black", fill="gray50") + 
+#  geom_point(data=locations_df, aes(x=lon, y=lat, colour=as.factor(z))) + 
+#  scale_colour_discrete(name="ID") + coord_sf(xlim=c(-8,16), ylim=c(45,55))
 ```
 
 Non-ggplot map of lived cities
@@ -84,7 +94,7 @@ points(x=locations_df$lon, y=locations_df$lat, type="p", col="red", pch=16)
 
 ``` r
 #' Get Open Street Map Data
-library(OpenStreetMap)
+library(Ope´nStreetMap)
 tile <- osmtile(x = locations_df$lon[1], y = locations_df$lat[1], zoom=8, type="osm")
 map <- openmap(tile$bbox$p1, tile$bbox$p2, zoom=8)
 plot(map)
